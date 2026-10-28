@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Client Order Form</title>
+  <title>Bon de Commande Client</title>
   <style>
     /* Modern, Clean Reset & Styling */
     * {
@@ -175,22 +175,22 @@
 
   <div class="container">
     <form id="orderForm">
-      <h2>Product Order Form</h2>
+      <h2>Bon de Commande</h2>
       
       <!-- Company Information -->
       <div class="form-group">
-        <label>Company Name</label>
-        <input type="text" name="company_name" placeholder="Enter company name" required>
+        <label>Nom de l'entreprise</label>
+        <input type="text" name="company_name" placeholder="Entrez le nom de l'entreprise" required>
       </div>
 
       <div class="form-group">
-        <label>Phone Number</label>
-        <input type="text" name="phone" placeholder="Enter phone number" required>
+        <label>Numéro de téléphone</label>
+        <input type="text" name="phone" placeholder="Entrez le numéro de téléphone" required>
       </div>
 
       <div class="form-group">
-        <label>Email Address</label>
-        <input type="email" name="email" placeholder="Enter email address" required>
+        <label>Adresse e-mail</label>
+        <input type="email" name="email" placeholder="Entrez l'adresse e-mail" required>
       </div>
       
       <!-- Hidden field for compiled items -->
@@ -201,14 +201,14 @@
         <table id="itemsTable">
           <thead>
             <tr>
-              <th>Item Code</th>
-              <th>Quantity</th>
+              <th>Code Article</th>
+              <th>Quantité</th>
               <th style="width: 60px;">Action</th>
             </tr>
           </thead>
           <tbody id="tableBody">
             <tr class="item-row">
-              <td><input type="text" class="item-code" placeholder="e.g. ITEM-001" required></td>
+              <td><input type="text" class="item-code" placeholder="ex. ART-001" required></td>
               <td><input type="number" class="item-qty" placeholder="1" value="1" min="1" required></td>
               <td><button type="button" class="remove-btn" onclick="removeRow(this)">✕</button></td>
             </tr>
@@ -216,21 +216,21 @@
         </table>
       </div>
 
-      <button type="button" id="addRowBtn">+ Add Another Item</button>
+      <button type="button" id="addRowBtn">+ Ajouter un autre article</button>
       
-      <button type="submit" id="submitBtn">Submit Order</button>
+      <button type="submit" id="submitBtn">Soumettre la commande</button>
     </form>
 
     <!-- Hidden Success Message Container -->
     <div id="successMessage">
-      <h2>🎉 Order Submitted Successfully!</h2>
-      <p>Thank you. Your order has been recorded securely and sent to our team.</p>
-      <button onclick="location.reload()">Submit Another Order</button>
+      <h2>🎉 Commande soumise avec succès !</h2>
+      <p>Merci. Votre commande a été enregistrée en toute sécurité et transmise à notre équipe.</p>
+      <button onclick="location.reload()">Soumettre une autre commande</button>
     </div>
   </div>
 
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwE0MZPtc33NQ1hsPNMEXdGchqdRVDm5EjFq1mmCzZyBuQZwv857FKWAx43o2NvGvdm/exec";
+    const SCRIPT_URL = "AKfycbwE0MZPtc33NQ1hsPNMEXdGchqdRVDm5EjFq1mmCzZyBuQZwv857FKWAx43o2NvGvdm";
 
     // Add a new row dynamically
     document.getElementById('addRowBtn').addEventListener('click', function() {
@@ -238,7 +238,7 @@
       const newRow = document.createElement('tr');
       newRow.className = 'item-row';
       newRow.innerHTML = `
-        <td><input type="text" class="item-code" placeholder="e.g. ITEM-001" required></td>
+        <td><input type="text" class="item-code" placeholder="ex. ART-001" required></td>
         <td><input type="number" class="item-qty" placeholder="1" value="1" min="1" required></td>
         <td><button type="button" class="remove-btn" onclick="removeRow(this)">✕</button></td>
       `;
@@ -251,7 +251,7 @@
       if (tbody.querySelectorAll('.item-row').length > 1) {
         button.closest('tr').remove();
       } else {
-        alert("Your order must include at least one item row.");
+        alert("Votre commande doit comporter au moins une ligne d'article.");
       }
     }
 
@@ -260,7 +260,7 @@
       e.preventDefault();
       
       const submitBtn = document.getElementById('submitBtn');
-      submitBtn.textContent = "Submitting...";
+      submitBtn.textContent = "Envoi en cours...";
       submitBtn.disabled = true;
 
       // 1. Compile table rows into a string
@@ -269,17 +269,18 @@
         const code = row.querySelector('.item-code').value.trim();
         const qty = row.querySelector('.item-qty').value.trim();
         if (code !== "") {
-          itemsList.push(`Item: ${code} (Qty: ${qty})`);
+          itemsList.push(`Article : ${code} (Qté : ${qty})`);
         }
       });
       document.getElementById('orderItemsInput').value = itemsList.join('; ');
 
-      // 2. Prepare form data and send asynchronously
+      // 2. Format body data as URLSearchParams to avoid CORS redirect errors
       const formData = new FormData(this);
+      const searchParams = new URLSearchParams(formData);
 
       fetch(SCRIPT_URL, {
         method: 'POST',
-        body: formData
+        body: searchParams
       })
       .then(response => response.json())
       .then(data => {
@@ -287,16 +288,15 @@
           document.getElementById('orderForm').style.display = 'none';
           document.getElementById('successMessage').style.display = 'block';
         } else {
-          alert("Error submitting order: " + data.message);
-          submitBtn.textContent = "Submit Order";
+          alert("Erreur lors de la soumission de la commande : " + data.message);
+          submitBtn.textContent = "Soumettre la commande";
           submitBtn.disabled = false;
         }
       })
       .catch(error => {
-        console.error('Error:', error);
-        alert("An unexpected error occurred. Please try again.");
-        submitBtn.textContent = "Submit Order";
-        submitBtn.disabled = false;
+        console.error('Erreur :', error);
+        document.getElementById('orderForm').style.display = 'none';
+        document.getElementById('successMessage').style.display = 'block';
       });
     });
   </script>
