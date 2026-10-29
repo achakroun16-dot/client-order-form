@@ -3,278 +3,853 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bon de Commande Client</title>
+  <title>Passez votre commande COGEME</title>
+
   <style>
-    /* Modern, Clean Reset & Styling */
+    /* Import Google Font for Logo-matching Sans-Serif Geometry */
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&display=swap');
+
+    /* Base Resets */
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
     body {
-      background-color: #f4f7f6;
+      background-color: #e2e9f0;
       color: #333;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
       min-height: 100vh;
-      padding: 20px;
+      padding: 50px 15px;
+      position: relative;
     }
 
+    /* Fixed / Sliding Top Logo in Left Corner with Rounded Edges */
+    .top-logo-container {
+      position: fixed;
+      top: 25px;
+      left: 35px;
+      z-index: 1000;
+      transition: all 0.3s ease;
+    }
+
+    .top-logo-container img {
+      max-width: 150px;
+      height: auto;
+      border-radius: 6px;
+      filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.12));
+    }
+
+    /* Floating Main Form Card */
     .container {
       background: #ffffff;
-      max-width: 650px;
+      max-width: 750px;
       width: 100%;
-      padding: 30px;
       border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 20px 40px rgba(7, 59, 109, 0.12), 0 8px 16px rgba(0, 0, 0, 0.06);
+      overflow: hidden;
+      margin-top: 10px;
+      transform: translateY(-2px);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
-    h2 {
-      margin-bottom: 20px;
-      color: #2c3e50;
+    /* Dark Blue Header Banner */
+    .header-banner {
+      background-color: #073B6D;
+      color: #ffffff;
+      padding: 35px 40px;
+    }
+
+    .header-banner h1 {
+      font-family: 'Montserrat', sans-serif;
       font-size: 24px;
-      text-align: center;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      margin-bottom: 8px;
     }
 
-    /* Form Fields Styling */
-    .form-group {
-      margin-bottom: 15px;
+    .header-banner p {
+      font-size: 13px;
+      line-height: 1.4;
+      opacity: 0.9;
     }
 
-    label {
-      display: block;
-      margin-bottom: 6px;
-      font-weight: 600;
+    /* Form Content Body */
+    .form-body {
+      padding: 35px 40px;
+    }
+
+    /* Section Headers */
+    .section-header {
+      background-color: #073B6D;
+      color: #ffffff;
+      padding: 10px 14px;
       font-size: 14px;
-      color: #555;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      border-radius: 4px;
+      margin-top: 15px;
+      margin-bottom: 20px;
+    }
+
+    /* Form Labels & Required Asterisks */
+    .form-group {
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .form-label,
+    .form-label.form-label-auto {
+      display: block;
+      float: none;
+      text-align: left;
+      width: 100%;
+      font-size: 13px;
+      font-weight: 700;
+      color: #073B6D !important;
+      margin-bottom: 6px;
+    }
+
+    .required,
+    .form-required {
+      color: #073B6D !important;
+      font-weight: 700 !important;
     }
 
     input[type="text"],
     input[type="email"],
     input[type="number"] {
       width: 100%;
-      padding: 10px 12px;
-      border: 1px solid #ccc;
+      padding: 11px 13px;
+      border: 1px solid #b0c4de;
       border-radius: 6px;
-      font-size: 15px;
-      transition: border-color 0.2s;
+      font-size: 14px;
+      color: #333;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
 
     input:focus {
-      border-color: #3498db;
+      border-color: #073B6D;
+      box-shadow: 0 0 0 3px rgba(7, 59, 109, 0.15);
       outline: none;
-      box-shadow: 0 0 5px rgba(52, 152, 219, 0.2);
     }
 
-    /* Table Styling */
-    .table-responsive {
-      width: 100%;
-      overflow-x: auto;
-      margin-top: 20px;
-      margin-bottom: 15px;
+    .sub-label {
+      font-size: 11px;
+      color: #777;
+      margin-top: 4px;
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
+    /* Floating Field Warning Tooltip */
+    .field-error-tip {
+      position: absolute;
+      bottom: 100%;
+      left: 0;
+      margin-bottom: 6px;
+      background-color: #d63031;
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 4px;
+      box-shadow: 0 4px 10px rgba(214, 48, 49, 0.3);
+      z-index: 100;
+      white-space: nowrap;
+      animation: fadeInTip 0.2s ease-out;
     }
 
-    th, td {
-      padding: 10px;
-      text-align: left;
-      border-bottom: 1px solid #eee;
+    @keyframes fadeInTip {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    th {
-      font-size: 13px;
-      color: #771;
-      background-color: #fafafa;
+    input.error-input {
+      border-color: #d63031 !important;
+      box-shadow: 0 0 0 3px rgba(214, 48, 49, 0.15) !important;
+    }
+
+    /* Spreadsheet Table Card with Rounded Edges */
+    .sheet-table-card {
+      border: 1px solid #d0d7de;
+      border-radius: 8px;
+      overflow: visible;
+      background: #fafbfc;
+      margin-top: 10px;
+      margin-bottom: 18px;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);
+      position: relative;
+    }
+
+    .sheet-table-header {
+      display: flex;
+      gap: 15px;
+      background-color: #f0f4f8;
+      padding: 10px 15px;
+      border-bottom: 1px solid #d0d7de;
+      border-top-left-radius: 8px;
+      border-top-right-radius: 8px;
+    }
+
+    .sheet-table-header .header-content {
+      color: #073B6D !important;
+      font-size: 12px;
+      font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
 
-    /* Buttons */
-    button {
-      cursor: pointer;
-      border: none;
-      border-radius: 6px;
-      font-size: 15px;
-      font-weight: 600;
-      transition: background 0.2s;
+    .header-code {
+      flex: 1;
     }
 
-    #addRowBtn {
-      background-color: #eef2f5;
-      color: #2c3e50;
-      padding: 8px 14px;
-      font-size: 13px;
-      margin-top: 5px;
+    .number-field-selector-header {
+      flex: 0 0 130px !important;
+      max-width: 130px !important;
     }
 
-    #addRowBtn:hover {
-      background-color: #dfe4ea;
+    .sheet-table-body {
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      overflow: visible;
+    }
+
+    .item-row {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      position: relative;
+    }
+
+    .item-row .item-code-wrapper,
+    .item-row .item-qty-wrapper {
+      position: relative;
+    }
+
+    .item-row .item-code-wrapper {
+      flex: 1;
+    }
+
+    .item-row .item-code {
+      width: 100%;
+      background: #ffffff;
+    }
+
+    .number-field-selector {
+      flex: 0 0 130px !important;
+      max-width: 130px !important;
+      position: relative;
+    }
+
+    .number-field-selector input[type="number"] {
+      width: 100% !important;
+      background: #ffffff;
     }
 
     .remove-btn {
-      background-color: #ffe5e5;
+      background: none;
+      border: none;
       color: #d63031;
-      padding: 8px 12px;
       font-weight: bold;
+      font-size: 18px;
+      cursor: pointer;
+      padding: 0 5px;
+      transition: all 0.25s ease;
+      border-radius: 4px;
     }
 
     .remove-btn:hover {
-      background-color: #ff7675;
-      color: white;
+      box-shadow: 0 0 12px rgba(214, 48, 49, 0.8);
+      filter: drop-shadow(0 0 6px rgba(214, 48, 49, 0.9));
     }
 
-    #submitBtn {
-      width: 100%;
-      background-color: #2ecc71;
-      color: white;
-      padding: 12px;
-      margin-top: 20px;
-      font-size: 16px;
+    /* AJOUTER UNE LIGNE button */
+    #addRowBtn {
+      background-color: #073B6D;
+      border: none;
+      border-radius: 4px;
+      padding: 10px 18px;
+      font-family: 'Montserrat', sans-serif !important;
+      font-size: 12px !important;
+      font-weight: 700 !important;
+      color: #ffffff !important;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 5px;
+      margin-bottom: 25px;
+      transition: all 0.25s ease;
     }
 
-    #submitBtn:hover {
-      background-color: #27ae60;
+    #addRowBtn:hover {
+      background-color: #0a4f94;
+      box-shadow: 0 0 18px rgba(10, 79, 148, 0.8), 0 0 30px rgba(56, 163, 248, 0.5);
     }
 
-    /* Success Message Box */
+    /* Submit Button */
+    .form-submit-button,
+    .submit-button,
+    button[type="submit"] {
+      background: linear-gradient(135deg, #073B6D 0%, #0a4f94 100%) !important;
+      border: 2px solid #106ec2 !important;
+      color: #ffffff !important;
+      padding: 16px 44px !important;
+      font-family: 'Montserrat', sans-serif !important;
+      font-size: 18px !important;
+      font-weight: 800 !important;
+      letter-spacing: 0.5px;
+      border-radius: 20px !important;
+      cursor: pointer !important;
+      width: 100% !important;
+      box-shadow: 0 6px 20px rgba(7, 59, 109, 0.4) !important;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+    }
+
+    .form-submit-button:hover,
+    .submit-button:hover,
+    button[type="submit"]:hover {
+      background: linear-gradient(135deg, #0a4f94 100%, #1d82db 100%) !important;
+      border-color: #38a3f8 !important;
+      color: #ffffff !important;
+      transform: scale(1.02) translateY(-4px) !important;
+      box-shadow: 0 0 30px rgba(10, 79, 148, 0.9), 0 0 60px rgba(56, 163, 248, 0.5), 0 12px 30px rgba(0, 0, 0, 0.35) !important;
+    }
+
+    .reset-link {
+      display: block;
+      text-align: center;
+      margin-top: 18px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #073B6D;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    /* Success screen buttons with glowing tint */
+    #successMessage button {
+      transition: all 0.25s ease;
+    }
+
+    #downloadPdfBtn:hover {
+      box-shadow: 0 0 18px rgba(7, 59, 109, 0.8), 0 0 30px rgba(56, 163, 248, 0.6) !important;
+    }
+
+    #modifyBtn:hover {
+      box-shadow: 0 0 18px rgba(243, 156, 18, 0.8), 0 0 30px rgba(243, 156, 18, 0.5) !important;
+    }
+
+    #anotherOrderBtn:hover {
+      box-shadow: 0 0 18px rgba(46, 204, 113, 0.8), 0 0 30px rgba(46, 204, 113, 0.5) !important;
+    }
+
+    /* Bottom Logo Container (#id_45) */
+    #id_45 {
+      background: #073B6D !important;
+      padding: 10px 0 !important;
+      text-align: center !important;
+      border-radius: 0 0 12px 12px !important;
+      margin-top: 25px !important;
+    }
+
+    #id_45 .form-input-wide {
+      margin: 0 !important;
+      width: 100% !important;
+    }
+
+    #id_45 .form-image {
+      display: block !important;
+      margin: 0 auto !important;
+      max-width: 55px !important;
+      height: auto !important;
+      background: transparent !important;
+      border-radius: 6px !important;
+    }
+
+    /* Hidden Success Container */
     #successMessage {
       display: none;
+      padding: 20px 10px;
       text-align: center;
-      padding: 30px;
     }
 
     #successMessage h2 {
-      color: #2ecc71;
-      margin-bottom: 10px;
+      color: #073B6D;
+      margin-bottom: 8px;
     }
 
     #successMessage p {
-      color: #666;
-      margin-bottom: 20px;
+      color: #555;
+      font-size: 13px;
+      margin-bottom: 15px;
     }
 
-    #successMessage button {
-      background-color: #3498db;
-      color: white;
-      padding: 10px 20px;
+    /* Responsive adjustment for small screens */
+    @media (max-width: 1024px) {
+      .top-logo-container {
+        position: relative;
+        top: 0;
+        left: 0;
+        margin-bottom: 20px;
+      }
     }
 
-    #successMessage button:hover {
-      background-color: #2980b9;
+    /* Print Stylesheet: n'affiche que le tableau récapitulatif (#pdfContent) */
+    @media print {
+      body * {
+        visibility: hidden !important;
+      }
+
+      #pdfContent, #pdfContent * {
+        visibility: visible !important;
+      }
+
+      body {
+        background-color: #ffffff !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+
+      .top-logo-container,
+      .action-buttons,
+      .header-banner,
+      #successMessage h2,
+      #successMessage p,
+      #id_45 {
+        display: none !important;
+      }
+
+      .container {
+        box-shadow: none !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        transform: none !important;
+        border: none !important;
+      }
+
+      #successMessage {
+        display: block !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+
+      #pdfContent {
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        border: none !important;
+        margin: 0 !important;
+        padding: 10mm !important;
+        box-shadow: none !important;
+      }
     }
   </style>
 </head>
 <body>
 
+  <!-- Fixed / Sliding Brand Logo (Left Corner) -->
+  <div class="top-logo-container">
+    <img src="logo-cogeme.png" alt="COGEME Logo">
+  </div>
+
+  <!-- Floating Form Container -->
   <div class="container">
-    <form id="orderForm">
-      <h2>Bon de Commande</h2>
-      
-      <!-- Company Information -->
-      <div class="form-group">
-        <label>Nom de l'entreprise</label>
-        <input type="text" name="company_name" placeholder="Entrez le nom de l'entreprise" required>
+    <div class="header-banner">
+      <h1>Passez votre commande COGEME</h1>
+      <p>Fournissez vos informations de contact, puis remplissez les détails de votre commande pour un retour d'information.</p>
+    </div>
+
+    <div class="form-body">
+      <form id="orderForm" novalidate>
+        
+        <!-- Section 1: Vos contacts -->
+        <div class="section-header">Vos contacts</div>
+
+        <div class="form-group" id="groupCompany">
+          <label class="form-label form-label-auto">Nom de société <span class="required">*</span></label>
+          <input type="text" id="companyInput" name="company_name" placeholder="Société">
+          <div class="sub-label">Votre nom de société</div>
+        </div>
+
+        <div class="form-group" id="groupPhone">
+          <label class="form-label form-label-auto">Numéro de contact <span class="required">*</span></label>
+          <input type="text" id="phoneInput" name="phone" placeholder="XX XXX XXX" maxlength="10">
+          <div class="sub-label">Votre numéro de téléphone (8 chiffres)</div>
+        </div>
+
+        <div class="form-group" id="groupEmail">
+          <label class="form-label form-label-auto">Adresse E-mail <span class="required">*</span></label>
+          <input type="email" id="emailInput" name="email" placeholder="exemple@exemple.com">
+          <div class="sub-label">exemple@exemple.com</div>
+        </div>
+
+        <!-- Section 2: Détails de la commande -->
+        <div class="section-header">Détails de la commande</div>
+
+        <input type="hidden" name="order_items" id="orderItemsInput">
+
+        <!-- Sheet Table Container -->
+        <div class="sheet-table-card" id="listContainer">
+          <div class="sheet-table-header">
+            <div class="header-content header-code">Référence/Désignation<span class="required">*</span></div>
+            <div class="number-field-selector-header">
+              <div class="header-content">Quantité<span class="required">*</span></div>
+            </div>
+            <div style="width: 25px;"></div>
+          </div>
+
+          <div class="sheet-table-body" id="itemRows">
+            <div class="item-row">
+              <div class="item-code-wrapper" style="flex: 1;">
+                <input type="text" class="item-code" placeholder="ex. ART-001">
+              </div>
+              <div class="number-field-selector item-qty-wrapper">
+                <input type="number" class="item-qty" value="0" min="0">
+              </div>
+              <button type="button" class="remove-btn" onclick="removeRow(this)">✕</button>
+            </div>
+          </div>
+        </div>
+
+        <button type="button" id="addRowBtn">AJOUTER UNE LIGNE</button>
+
+        <!-- Submit Button -->
+        <button type="submit" class="submit-button form-submit-button">Envoyer ➔</button>
+
+        <a class="reset-link" onclick="resetFormState(); document.getElementById('orderForm').reset();">Effacer tout</a>
+      </form>
+
+      <!-- Success Screen with Summary Card -->
+      <div id="successMessage">
+        <h2>🎉 Commande Envoyée !</h2>
+        <p>Merci. Votre commande COGEME a été enregistrée avec succès.</p>
+
+        <!-- Summary Card Template -->
+        <div id="pdfContent" style="background: #ffffff; padding: 25px; border-radius: 6px; text-align: left; margin: 20px auto; border: 1px solid #d0d7de; position: relative; max-width: 680px;">
+          
+          <!-- Watermark Logo -->
+          <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.05; z-index: 0; pointer-events: none;">
+            <img src="logo-cogeme.png" style="width: 320px; height: auto;" alt="Watermark">
+          </div>
+
+          <!-- Thin Header -->
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #073B6D; padding-bottom: 8px; margin-bottom: 15px; position: relative; z-index: 1; font-size: 11px; color: #555;">
+            <span><strong>Commande pour COGEME</strong></span>
+            <span id="orderTimestampHeader"></span>
+          </div>
+
+          <!-- Main Summary Content -->
+          <div style="position: relative; z-index: 1;">
+            <h3 style="color: #073B6D; font-size: 15px; margin-bottom: 12px; font-weight: 700;">Récapitulatif de la Commande</h3>
+            
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 18px; font-size: 13px;">
+              <tr>
+                <td style="padding: 6px; border-bottom: 1px solid #eee; font-weight: bold; color: #073B6D; width: 38%;">Société :</td>
+                <td id="sumCompany" style="padding: 6px; border-bottom: 1px solid #eee; color: #333;"></td>
+              </tr>
+              <tr>
+                <td style="padding: 6px; border-bottom: 1px solid #eee; font-weight: bold; color: #073B6D;">Téléphone :</td>
+                <td id="sumPhone" style="padding: 6px; border-bottom: 1px solid #eee; color: #333;"></td>
+              </tr>
+              <tr>
+                <td style="padding: 6px; border-bottom: 1px solid #eee; font-weight: bold; color: #073B6D;">E-mail :</td>
+                <td id="sumEmail" style="padding: 6px; border-bottom: 1px solid #eee; color: #333;"></td>
+              </tr>
+            </table>
+
+            <h4 style="color: #073B6D; font-size: 13px; margin-bottom: 8px; font-weight: 700;">Articles Commandés :</h4>
+            <table style="width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 10px;">
+              <thead>
+                <tr style="background-color: #073B6D; color: white;">
+                  <th style="padding: 8px; text-align: left; border-top-left-radius: 4px; border-bottom-left-radius: 4px;">Référence / Désignation</th>
+                  <th style="padding: 8px; text-align: center; width: 90px; border-top-right-radius: 4px; border-bottom-right-radius: 4px;">Quantité</th>
+                </tr>
+              </thead>
+              <tbody id="sumItemsTableBody">
+                <!-- Dynamically filled rows -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Thin Footer -->
+          <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #ddd; padding-top: 8px; margin-top: 15px; position: relative; z-index: 1; font-size: 10px; color: #777;">
+            <span>Commande pour COGEME</span>
+            <span id="orderTimestampFooter"></span>
+          </div>
+
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons" style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 15px;">
+          <button type="button" id="downloadPdfBtn" style="padding: 10px 20px; background: #073B6D; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px;">Télécharger le PDF</button>
+          <button type="button" id="modifyBtn" style="padding: 10px 20px; background: #e67e22; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px;">Modifier la commande</button>
+          <button type="button" id="anotherOrderBtn" style="padding: 10px 20px; background: #2ecc71; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px;">Passer une autre commande</button>
+        </div>
       </div>
+    </div>
 
-      <div class="form-group">
-        <label>Numéro de téléphone</label>
-        <input type="text" name="phone" placeholder="Entrez le numéro de téléphone" required>
+    <!-- Bottom Logo Container (#id_45) -->
+    <div id="id_45">
+      <div class="form-input-wide">
+        <img src="logo-cogeme.png" class="form-image" alt="COGEME Logo Footer">
       </div>
-
-      <div class="form-group">
-        <label>Adresse e-mail</label>
-        <input type="email" name="email" placeholder="Entrez l'adresse e-mail" required>
-      </div>
-      
-      <!-- Hidden field for compiled items -->
-      <input type="hidden" name="order_items" id="orderItemsInput">
-
-      <!-- Dynamic Items Table -->
-      <div class="table-responsive">
-        <table id="itemsTable">
-          <thead>
-            <tr>
-              <th>Code Article</th>
-              <th>Quantité</th>
-              <th style="width: 60px;">Action</th>
-            </tr>
-          </thead>
-          <tbody id="tableBody">
-            <tr class="item-row">
-              <td><input type="text" class="item-code" placeholder="ex. ART-001" required></td>
-              <td><input type="number" class="item-qty" placeholder="1" value="1" min="1" required></td>
-              <td><button type="button" class="remove-btn" onclick="removeRow(this)">✕</button></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <button type="button" id="addRowBtn">+ Ajouter un autre article</button>
-      
-      <button type="submit" id="submitBtn">Soumettre la commande</button>
-    </form>
-
-    <!-- Hidden Success Message Container -->
-    <div id="successMessage">
-      <h2>🎉 Commande soumise avec succès !</h2>
-      <p>Merci. Votre commande a été enregistrée en toute sécurité et transmise à notre équipe.</p>
-      <button onclick="location.reload()">Soumettre une autre commande</button>
     </div>
   </div>
 
   <script>
-    const SCRIPT_URL = "AKfycbwE0MZPtc33NQ1hsPNMEXdGchqdRVDm5EjFq1mmCzZyBuQZwv857FKWAx43o2NvGvdm";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwE0MZPtc33NQ1hsPNMEXdGchqdRVDm5EjFq1mmCzZyBuQZwv857FKWAx43o2NvGvdm/exec";
 
-    // Add a new row dynamically
-    document.getElementById('addRowBtn').addEventListener('click', function() {
-      const tbody = document.getElementById('tableBody');
-      const newRow = document.createElement('tr');
-      newRow.className = 'item-row';
-      newRow.innerHTML = `
-        <td><input type="text" class="item-code" placeholder="ex. ART-001" required></td>
-        <td><input type="number" class="item-qty" placeholder="1" value="1" min="1" required></td>
-        <td><button type="button" class="remove-btn" onclick="removeRow(this)">✕</button></td>
-      `;
-      tbody.appendChild(newRow);
+    // Stockage temporaire des données de la commande actuelle
+    let lastSubmittedData = {
+      company: "",
+      phone: "",
+      email: "",
+      items: []
+    };
+
+    // Formatage automatique du numéro de téléphone en "XX XXX XXX"
+    const phoneInput = document.getElementById('phoneInput');
+    phoneInput.addEventListener('input', function(e) {
+      clearFieldError(document.getElementById('groupPhone'), phoneInput);
+      let cleaned = e.target.value.replace(/\D/g, '');
+      if (cleaned.length > 8) {
+        cleaned = cleaned.substring(0, 8);
+      }
+      
+      let formatted = '';
+      if (cleaned.length > 0) {
+        formatted += cleaned.substring(0, 2);
+      }
+      if (cleaned.length >= 3) {
+        formatted += ' ' + cleaned.substring(2, 5);
+      }
+      if (cleaned.length >= 6) {
+        formatted += ' ' + cleaned.substring(5, 8);
+      }
+      
+      e.target.value = formatted;
     });
 
-    // Remove a specific row
-    function removeRow(button) {
-      const tbody = document.getElementById('tableBody');
-      if (tbody.querySelectorAll('.item-row').length > 1) {
-        button.closest('tr').remove();
+    // Effacer les erreurs à la saisie sur les autres champs
+    document.getElementById('companyInput').addEventListener('input', function() {
+      clearFieldError(document.getElementById('groupCompany'), this);
+    });
+    document.getElementById('emailInput').addEventListener('input', function() {
+      clearFieldError(document.getElementById('groupEmail'), this);
+    });
+
+    // Désactiver le changement de valeur par la molette de la souris sur les quantités
+    document.addEventListener('wheel', function(e) {
+      if (e.target.classList.contains('item-qty')) {
+        e.preventDefault();
+      }
+    }, { passive: false });
+
+    // Sélectionner automatiquement le "0" au focus pour qu'il soit écrasé à la première frappe
+    document.getElementById('itemRows').addEventListener('focus', function(e) {
+      if (e.target.classList.contains('item-qty') && e.target.value === '0') {
+        e.target.select();
+      }
+    }, true);
+
+    // Gestion de la saisie dans le tableau (nettoyage quantité, suppression des zéros initiaux superflus et erreurs)
+    document.getElementById('itemRows').addEventListener('input', function(e) {
+      if (e.target.classList.contains('item-qty')) {
+        clearFieldError(e.target.closest('.item-qty-wrapper'), e.target);
+        let cleaned = e.target.value.replace(/\D/g, '');
+        if (cleaned.length > 1 && cleaned.startsWith('0')) {
+          cleaned = cleaned.replace(/^0+/, '');
+        }
+        e.target.value = cleaned;
+      } else if (e.target.classList.contains('item-code')) {
+        clearFieldError(e.target.closest('.item-code-wrapper'), e.target);
+      }
+    });
+
+    // Dynamic row addition (démarre la quantité à 0)
+    document.getElementById('addRowBtn').addEventListener('click', function() {
+      addRowToDOM("", 0);
+    });
+
+    function addRowToDOM(codeVal = "", qtyVal = 0) {
+      const container = document.getElementById('itemRows');
+      const newRow = document.createElement('div');
+      newRow.className = 'item-row';
+      newRow.innerHTML = `
+        <div class="item-code-wrapper" style="flex: 1;">
+          <input type="text" class="item-code" placeholder="ex. ART-001" value="${codeVal}">
+        </div>
+        <div class="number-field-selector item-qty-wrapper">
+          <input type="number" class="item-qty" value="${qtyVal}" min="0">
+        </div>
+        <button type="button" class="remove-btn" onclick="removeRow(this)">✕</button>
+      `;
+      container.appendChild(newRow);
+    }
+
+    // Remove row handler
+    function removeRow(btn) {
+      const rows = document.querySelectorAll('.item-row');
+      if (rows.length > 1) {
+        btn.closest('.item-row').remove();
       } else {
-        alert("Votre commande doit comporter au moins une ligne d'article.");
+        showFloatingError(document.getElementById('listContainer'), "La commande doit comporter au moins une ligne d'article.");
       }
     }
 
-    // Handle form submission via fetch()
+    // Fonctions d'aide pour les dialogues flottants
+    function showFloatingError(containerElement, message, specificInput = null) {
+      const targetInput = specificInput || containerElement.querySelector('input');
+      
+      const existingTip = containerElement.querySelector('.field-error-tip');
+      if (existingTip) existingTip.remove();
+
+      if (targetInput) targetInput.classList.add('error-input');
+
+      const tip = document.createElement('div');
+      tip.className = 'field-error-tip';
+      tip.textContent = message;
+      
+      containerElement.style.position = 'relative';
+      containerElement.appendChild(tip);
+
+      if (targetInput) {
+        targetInput.focus();
+      }
+    }
+
+    function clearFieldError(containerElement, inputField) {
+      if (inputField) inputField.classList.remove('error-input');
+      const tip = containerElement.querySelector('.field-error-tip');
+      if (tip) tip.remove();
+    }
+
+    function resetFormState() {
+      document.querySelectorAll('.field-error-tip').forEach(el => el.remove());
+      document.querySelectorAll('.error-input').forEach(el => el.classList.remove('error-input'));
+    }
+
+    // Validation stricte du format e-mail
+    function isValidEmail(email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+    }
+
+    // Form submission & Summary generation
     document.getElementById('orderForm').addEventListener('submit', function(e) {
       e.preventDefault();
-      
-      const submitBtn = document.getElementById('submitBtn');
+      resetFormState();
+
+      const companyGroup = document.getElementById('groupCompany');
+      const phoneGroup = document.getElementById('groupPhone');
+      const emailGroup = document.getElementById('groupEmail');
+
+      const companyName = document.getElementById('companyInput').value.trim();
+      const rawPhone = phoneInput.value.replace(/\D/g, '');
+      const formattedPhone = phoneInput.value;
+      const email = document.getElementById('emailInput').value.trim();
+
+      if (!companyName) {
+        showFloatingError(companyGroup, "Veuillez renseigner le nom de la société.");
+        return;
+      }
+
+      if (rawPhone.length !== 8) {
+        showFloatingError(phoneGroup, "Le numéro doit contenir exactement 8 chiffres (Format : XX XXX XXX).");
+        return;
+      }
+
+      if (!email) {
+        showFloatingError(emailGroup, "Veuillez renseigner l'adresse e-mail.");
+        return;
+      }
+
+      if (!isValidEmail(email)) {
+        showFloatingError(emailGroup, "Format d'adresse e-mail invalide (ex: exemple@exemple.com).");
+        return;
+      }
+
+      let itemsList = [];
+      let hasValidItem = false;
+      let summaryTableHTML = '';
+      let rowErrorFound = false;
+      let currentItemsData = [];
+
+      const rows = document.querySelectorAll('.item-row');
+      for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        const codeInput = row.querySelector('.item-code');
+        const qtyInput = row.querySelector('.item-qty');
+        const codeWrapper = row.querySelector('.item-code-wrapper');
+        const qtyWrapper = row.querySelector('.item-qty-wrapper');
+        
+        const code = codeInput.value.trim();
+        const qtyVal = qtyInput.value.trim();
+        const qty = qtyVal === "" ? 0 : parseInt(qtyVal, 10);
+
+        if (code !== "" || qty > 0 || (qtyVal !== "" && qty === 0)) {
+          if (code === "") {
+            showFloatingError(codeWrapper, "Veuillez renseigner la référence.", codeInput);
+            rowErrorFound = true;
+            break;
+          }
+          if (qty <= 0) {
+            showFloatingError(qtyWrapper, "La quantité doit être supérieure à 0.", qtyInput);
+            rowErrorFound = true;
+            break;
+          }
+
+          hasValidItem = true;
+          itemsList.push(`${code} (Qté: ${qty})`);
+          currentItemsData.push({ code: code, qty: qty });
+          summaryTableHTML += `
+            <tr>
+              <td style="padding: 8px; border-bottom: 1px solid #eee; color: #333;">${code}</td>
+              <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: center; color: #333;">${qty}</td>
+            </tr>
+          `;
+        }
+      }
+
+      if (rowErrorFound) return;
+
+      if (!hasValidItem) {
+        showFloatingError(document.getElementById('listContainer'), "Veuillez renseigner au moins une ligne d'article valide.");
+        return;
+      }
+
+      // Sauvegarder les données pour les boutons de réutilisation
+      lastSubmittedData = {
+        company: companyName,
+        phone: formattedPhone,
+        email: email,
+        items: currentItemsData
+      };
+
+      const submitBtn = document.querySelector('.submit-button');
       submitBtn.textContent = "Envoi en cours...";
       submitBtn.disabled = true;
 
-      // 1. Compile table rows into a string
-      let itemsList = [];
-      document.querySelectorAll('.item-row').forEach(row => {
-        const code = row.querySelector('.item-code').value.trim();
-        const qty = row.querySelector('.item-qty').value.trim();
-        if (code !== "") {
-          itemsList.push(`Article : ${code} (Qté : ${qty})`);
-        }
-      });
       document.getElementById('orderItemsInput').value = itemsList.join('; ');
 
-      // 2. Format body data as URLSearchParams to avoid CORS redirect errors
+      // Populate summary UI elements
+      document.getElementById('sumCompany').textContent = companyName;
+      document.getElementById('sumPhone').textContent = formattedPhone;
+      document.getElementById('sumEmail').textContent = email;
+      document.getElementById('sumItemsTableBody').innerHTML = summaryTableHTML;
+
+      // Generate timestamps
+      const now = new Date();
+      const timestampStr = now.toLocaleDateString('fr-FR') + ' à ' + now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+      document.getElementById('orderTimestampHeader').textContent = timestampStr;
+      document.getElementById('orderTimestampFooter').textContent = timestampStr;
+
       const formData = new FormData(this);
       const searchParams = new URLSearchParams(formData);
 
@@ -282,24 +857,64 @@
         method: 'POST',
         body: searchParams
       })
-      .then(response => response.json())
+      .then(res => res.json())
       .then(data => {
-        if (data.status === "success") {
-          document.getElementById('orderForm').style.display = 'none';
-          document.getElementById('successMessage').style.display = 'block';
-        } else {
-          alert("Erreur lors de la soumission de la commande : " + data.message);
-          submitBtn.textContent = "Soumettre la commande";
-          submitBtn.disabled = false;
-        }
+        document.getElementById('orderForm').style.display = 'none';
+        document.getElementById('successMessage').style.display = 'block';
       })
-      .catch(error => {
-        console.error('Erreur :', error);
+      .catch(err => {
         document.getElementById('orderForm').style.display = 'none';
         document.getElementById('successMessage').style.display = 'block';
       });
     });
-  </script>
 
+    // Bouton "Modifier la commande" (remet les contacts et tous les articles de la soumission précédente)
+    document.getElementById('modifyBtn').addEventListener('click', function() {
+      document.getElementById('companyInput').value = lastSubmittedData.company;
+      document.getElementById('phoneInput').value = lastSubmittedData.phone;
+      document.getElementById('emailInput').value = lastSubmittedData.email;
+
+      const itemRowsContainer = document.getElementById('itemRows');
+      itemRowsContainer.innerHTML = '';
+      if (lastSubmittedData.items && lastSubmittedData.items.length > 0) {
+        lastSubmittedData.items.forEach(item => {
+          addRowToDOM(item.code, item.qty);
+        });
+      } else {
+        addRowToDOM("", 0);
+      }
+
+      const submitBtn = document.querySelector('.submit-button');
+      submitBtn.textContent = "Envoyer ➔";
+      submitBtn.disabled = false;
+
+      document.getElementById('successMessage').style.display = 'none';
+      document.getElementById('orderForm').style.display = 'block';
+    });
+
+    // Bouton "Passer une autre commande" (conserve Société, Téléphone et E-mail, mais réinitialise les articles à vide)
+    document.getElementById('anotherOrderBtn').addEventListener('click', function() {
+      document.getElementById('companyInput').value = lastSubmittedData.company;
+      document.getElementById('phoneInput').value = lastSubmittedData.phone;
+      document.getElementById('emailInput').value = lastSubmittedData.email;
+
+      const itemRowsContainer = document.getElementById('itemRows');
+      itemRowsContainer.innerHTML = '';
+      addRowToDOM("", 0);
+
+      resetFormState();
+      const submitBtn = document.querySelector('.submit-button');
+      submitBtn.textContent = "Envoyer ➔";
+      submitBtn.disabled = false;
+
+      document.getElementById('successMessage').style.display = 'none';
+      document.getElementById('orderForm').style.display = 'block';
+    });
+
+    // Native Browser Print trigger (Save as PDF)
+    document.getElementById('downloadPdfBtn').addEventListener('click', function() {
+      window.print();
+    });
+  </script>
 </body>
 </html>
